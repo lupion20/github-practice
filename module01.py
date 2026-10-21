@@ -1,3 +1,7 @@
+import os
+import json
+
+FILENAME = "todos.json"
 def add(todos):
     title = input("タスク名を入力 > ").strip()
     if title:
@@ -48,9 +52,19 @@ def delete(todos):
         removed = todos.pop(index)
         print(f"{removed["title"]}を削除しました")
 
+def loadtodos():
+    if os.path.exists(FILENAME):
+        with open(FILENAME, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+def savetodos(todos):
+    with open(FILENAME, "w", encoding="utf-8") as f:
+        json.dump(todos, f, ensure_ascii=False, indent=2)
+    
 def main():
-    #mainで空のリストを作成しておく
-    todos = []
+    #保存したリストを読み込む
+    todos = loadtodos()
     #while Trueを使うことでCUIとして継続表示
     while True:
         print("\n=== ToDoアプリ ===")
@@ -61,10 +75,13 @@ def main():
             break
         elif choice == "1":
             add(todos)
+            savetodos(todos)
         elif choice == "2":
             view(todos)
         elif choice == "3":
             complete(todos)
+            savetodos(todos)
         elif choice == "4":
-            select(todos)
+            delete(todos)
+            savetodos(todos)
 main()
